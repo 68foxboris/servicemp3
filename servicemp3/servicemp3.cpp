@@ -582,7 +582,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 		m_sourceinfo.containertype = ctAVI;
 		m_sourceinfo.is_video = TRUE;
 	}
-	else if (strcasecmp(ext, ".mp4") == 0 || strcasecmp(ext, ".mov") == 0 || strcasecmp(ext, ".m4v") == 0 || strcasecmp(ext, ".3gp") == 0 || strcasecmp(ext, ".3g2") == 0)
+	else if (strcasecmp(ext, ".mp4") == 0 || strcasecmp(ext, ".mov") == 0 || strcasecmp(ext, ".m4v") == 0 || strcasecmp(ext, ".m4s") == 0 || strcasecmp(ext, ".3gp") == 0 || strcasecmp(ext, ".3g2") == 0)
 	{
 		m_sourceinfo.containertype = ctMP4;
 		m_sourceinfo.is_video = TRUE;
@@ -590,6 +590,16 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	else if (strcasecmp(ext, ".asf") == 0 || strcasecmp(ext, ".wmv") == 0)
 	{
 		m_sourceinfo.containertype = ctASF;
+		m_sourceinfo.is_video = TRUE;
+	}
+	else if (strcasecmp(ext, ".avc1") == 0)
+	{
+		m_sourceinfo.containertype = ctMP4;
+		m_sourceinfo.is_video = TRUE;
+	}
+	else if (strcasecmp(ext, ".application/dash+xml") == 0)
+	{
+		m_sourceinfo.containertype = ctMP4;
 		m_sourceinfo.is_video = TRUE;
 	}
 	else if (strcasecmp(ext, ".webm") == 0)
