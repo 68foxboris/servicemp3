@@ -6,6 +6,7 @@
 #include <lib/base/init.h>
 #include <lib/base/nconfig.h>
 #include <lib/base/object.h>
+#include <lib/base/esubtitlesettings.h>
 #include <lib/dvb/epgcache.h>
 #include <lib/dvb/decoder.h>
 #include <lib/components/file_eraser.h>
@@ -2750,8 +2751,8 @@ void eServiceMP3::pullSubtitle(GstBuffer *buffer)
 		{
 			if ( subType < stVOB )
 			{
-				int delay = eConfigManager::getConfigIntValue("config.subtitles.pango_subtitles_delay");
-				int subtitle_fps = eConfigManager::getConfigIntValue("config.subtitles.pango_subtitles_fps");
+				int delay_ms = eSubtitleSettings::pango_subtitles_delay / 90;
+				int subtitle_fps = eSubtitleSettings::pango_subtitles_fps;
 
 				double convert_fps = 1.0;
 				if (subtitle_fps > 1 && m_framerate > 0)
@@ -2824,6 +2825,16 @@ void eServiceMP3::pushSubtitles()
 		}
 
 #endif
+
+	if (m_currentSubtitleStream >= 0 && m_currentSubtitleStream < (int)m_subtitleStreams.size() &&
+		m_subtitleStreams[m_currentSubtitleStream].type &&
+		m_subtitleStreams[m_currentSubtitleStream].type < stVOB)
+	{
+		delay_ms = eSubtitleSettings::pango_subtitles_delay / 90;
+		int subtitle_fps = eSubtitleSettings::pango_subtitles_fps;
+		if (subtitle_fps > 1 && m_framerate > 0)
+			convert_fps = subtitle_fps / (double)m_framerate;
+	}
 
 	for (current = m_subtitle_pages.lower_bound(decoder_ms); current != m_subtitle_pages.end(); current++)
 	{
@@ -2931,7 +2942,7 @@ RESULT eServiceMP3::disableSubtitles()
 RESULT eServiceMP3::getCachedSubtitle(struct SubtitleTrack &track)
 {
 
-	bool autoturnon = eConfigManager::getConfigBoolValue("config.subtitles.pango_autoturnon", true);
+	bool autoturnon = eSubtitleSettings::pango_autoturnon;
 	int m_subtitleStreams_size = (int)m_subtitleStreams.size();
 	if (!autoturnon)
 		return -1;
