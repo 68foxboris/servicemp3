@@ -2765,8 +2765,23 @@ void eServiceMP3::pullSubtitle(GstBuffer *buffer)
 
 				eLog(6, "[eServiceMP3] got new text subtitle @ buf_pos = %lld ns (in pts=%lld), dur=%lld: '%s' ", buf_pos, buf_pos/11111, duration_ns, line.c_str());
 
-				uint32_t start_ms = ((buf_pos / 1000000ULL) * convert_fps) + (delay / 90);
+				uint32_t start_ms = ((buf_pos / 1000000ULL) * convert_fps);
 				uint32_t end_ms = start_ms + (duration_ns / 1000000ULL);
+				if (delay_ms > 0)
+				{
+					//eDebug("[eServiceMP3] sub title delay add is %d", delay_ms);
+					start_ms += delay_ms;
+					end_ms += delay_ms;
+				}
+				else if (delay_ms < 0)
+				{
+					if (start_ms >= (uint32_t)(delay_ms * -1))
+					{
+						//eDebug("[eServiceMP3] sub title delay substract is %d", delay_ms);
+						start_ms += delay_ms;
+						end_ms += delay_ms;
+					}
+				}
 				m_subtitle_pages.insert(subtitle_pages_map_pair_t(end_ms, subtitle_page_t(start_ms, end_ms, line)));
 				m_subtitle_sync_timer->start(1, true);
 			}
@@ -2782,7 +2797,7 @@ void eServiceMP3::pullSubtitle(GstBuffer *buffer)
 void eServiceMP3::pushSubtitles()
 {
 	pts_t running_pts = 0;
-	int32_t next_timer = 0, decoder_ms, start_ms, end_ms, diff_start_ms, diff_end_ms;
+	int32_t next_timer = 0, decoder_ms, start_ms, end_ms, diff_start_ms, diff_end_ms, delay_ms;
 	subtitle_pages_map_t::iterator current;
 
 	// wait until clock is stable
@@ -2809,6 +2824,7 @@ void eServiceMP3::pushSubtitles()
 	}
 
 	decoder_ms = running_pts / 90;
+	delay_ms = 0;
 
 #if 0
 		eDebug("[eServiceMP3] *** all subs: ");
@@ -2838,8 +2854,8 @@ void eServiceMP3::pushSubtitles()
 
 	for (current = m_subtitle_pages.lower_bound(decoder_ms); current != m_subtitle_pages.end(); current++)
 	{
-		start_ms = current->second.start_ms;
-		end_ms = current->second.end_ms;
+		start_ms = (current->second.start_ms * convert_fps) + delay_ms;
+		end_ms = (current->second.end_ms * convert_fps) + delay_ms;
 		diff_start_ms = start_ms - decoder_ms;
 		diff_end_ms = end_ms - decoder_ms;
 
