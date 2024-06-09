@@ -2765,7 +2765,7 @@ void eServiceMP3::pullSubtitle(GstBuffer *buffer)
 
 				eLog(6, "[eServiceMP3] got new text subtitle @ buf_pos = %lld ns (in pts=%lld), dur=%lld: '%s' ", buf_pos, buf_pos/11111, duration_ns, line.c_str());
 
-				uint32_t start_ms = ((buf_pos / 1000000ULL) * convert_fps);
+				uint32_t start_ms = buf_pos / 1000000ULL;
 				uint32_t end_ms = start_ms + (duration_ns / 1000000ULL);
 				if (delay_ms > 0)
 				{
