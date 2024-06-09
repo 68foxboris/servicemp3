@@ -2798,6 +2798,7 @@ void eServiceMP3::pushSubtitles()
 {
 	pts_t running_pts = 0;
 	int32_t next_timer = 0, decoder_ms, start_ms, end_ms, diff_start_ms, diff_end_ms, delay_ms;
+	double convert_fps = 1.0;
 	subtitle_pages_map_t::iterator current;
 
 	// wait until clock is stable
