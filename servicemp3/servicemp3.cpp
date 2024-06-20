@@ -6,7 +6,8 @@
 #include <lib/base/init.h>
 #include <lib/base/nconfig.h>
 #include <lib/base/object.h>
-#include <lib/base/esubtitlesettings.h>
+#include <lib/base/esettings.h>
+#include <lib/base/esimpleconfig.h>
 #include <lib/dvb/epgcache.h>
 #include <lib/dvb/decoder.h>
 #include <lib/components/file_eraser.h>
@@ -486,7 +487,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_aspect = m_width = m_height = m_framerate = m_progressive = m_gamma = -1;
 
 	m_state = stIdle;
-	m_gstdot = eConfigManager::getConfigBoolValue("config.crash.gstdot");
+	m_gstdot = eSimpleConfig::getBool("config.crash.gstdot", false);
 	m_coverart = false;
 	eDebug("[eServiceMP3] construct!");
 
@@ -688,7 +689,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	eDebug("[eServiceMP3] playbin uri=%s", uri);
 	if (suburi != NULL)
 		eDebug("[eServiceMP3] playbin suburi=%s", suburi);
-	bool useplaybin3 = eConfigManager::getConfigBoolValue("config.misc.usegstplaybin3", false);
+	bool useplaybin3 = eSimpleConfig::getBool("config.misc.usegstplaybin3", false);
 	if(useplaybin3)
 		m_gst_playbin = gst_element_factory_make("playbin3", "playbin");
 	else
@@ -1947,7 +1948,7 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
 
 					if (!videoSink || m_ref.getData(0) == 2) // show radio pic
 					{
-						bool showRadioBackground = eConfigManager::getConfigBoolValue("config.misc.showradiopic", true);
+						bool showRadioBackground = eSimpleConfig::getBool("config.misc.showradiopic", true);
 						std::string radio_pic = eConfigManager::getConfigValue(showRadioBackground ? "config.misc.radiopic" : "config.misc.blackradiopic");
 						m_decoder = new eTSMPEGDecoder(NULL, 0);
 						m_decoder->showSinglePic(radio_pic.c_str());
@@ -3145,7 +3146,7 @@ void eServiceMP3::setAC3Delay(int delay)
 		 */
 		if (videoSink)
 		{
-			config_delay_int += eConfigManager::getConfigIntValue("config.av.generalAC3delay");
+			config_delay_int += eSimpleConfig::getInt("config.av.generalAC3delay");
 		}
 		else
 		{
@@ -3176,7 +3177,7 @@ void eServiceMP3::setPCMDelay(int delay)
 		 */
 		if (videoSink)
 		{
-			config_delay_int += eConfigManager::getConfigIntValue("config.av.generalPCMdelay");
+			config_delay_int += eSimpleConfig::getInt("config.av.generalPCMdelay");
 		}
 		else
 		{
