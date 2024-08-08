@@ -447,7 +447,7 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
 	m_currentAudioStream = -1;
 	m_currentSubtitleStream = -1;
 	m_cachedSubtitleStream = -2; /* report subtitle stream to be 'cached'. TODO: use an actual cache. */
-	m_autoturnon = eConfigManager::getConfigBoolValue("config.subtitles.pango_autoturnon", true);
+	m_autoturnon = eSubtitleSettings::pango_autoturnon;
 	m_subtitle_widget = 0;
 	m_currentTrickRatio = 1.0;
 	m_buffer_size = 5 * 1024 * 1024;
